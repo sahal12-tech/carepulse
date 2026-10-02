@@ -4,6 +4,12 @@ import '../modules/auth/binding/auth_binding.dart';
 import '../modules/auth/view/login_view.dart';
 import '../modules/dashboard/binding/dashboard_binding.dart';
 import '../modules/dashboard/view/dashboard_view.dart';
+import '../modules/patient_profile/binding/profile_binding.dart';
+import '../modules/patient_profile/view/patient_profile_view.dart';
+import '../modules/appointments/binding/appointments_binding.dart';
+import '../modules/appointments/view/appointments_view.dart';
+import '../modules/registration/binding/registration_binding.dart';
+import '../modules/registration/view/registration_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -31,24 +37,18 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.patientProfile,
-      page: () => Scaffold(
-        appBar: AppBar(title: const Text('Patient Profile')),
-        body: const Center(child: Text('Patient Profile (Phase 2)')),
-      ),
+      page: () => const PatientProfileView(),
+      binding: ProfileBinding(),
     ),
     GetPage(
       name: AppRoutes.appointments,
-      page: () => Scaffold(
-        appBar: AppBar(title: const Text('Appointments')),
-        body: const Center(child: Text('Appointments Schedule (Phase 3)')),
-      ),
+      page: () => const AppointmentsView(),
+      binding: AppointmentsBinding(),
     ),
     GetPage(
       name: AppRoutes.registration,
-      page: () => Scaffold(
-        appBar: AppBar(title: const Text('Patient Registration')),
-        body: const Center(child: Text('Patient Registration Stepper (Phase 3)')),
-      ),
+      page: () => const RegistrationView(),
+      binding: RegistrationBinding(),
     ),
   ];
 }

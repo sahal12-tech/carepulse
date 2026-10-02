@@ -72,14 +72,14 @@ class PatientCard extends StatelessWidget {
 
               Row(
                 children: [
-                  const Icon(Icons.phone_outlined, size: 14, color: Colors.grey),
+                  Icon(Icons.phone_outlined, size: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
                   const SizedBox(width: 4),
                   Text(
                     patient.phone,
                     style: theme.textTheme.bodySmall,
                   ),
                   const SizedBox(width: AppConstants.spaceMd),
-                  const Icon(Icons.medical_services_outlined, size: 14, color: Colors.grey),
+                  Icon(Icons.medical_services_outlined, size: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(

@@ -72,7 +72,7 @@ class DashboardView extends GetView<DashboardController> {
                             Text(
                               'Welcome back, ${controller.currentUsername}',
                               style: theme.textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
+                                color: theme.colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -83,13 +83,14 @@ class DashboardView extends GetView<DashboardController> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(AppConstants.radiusSm),
+                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(
+                                    AppConstants.radiusSm),
                               ),
                               child: Text(
                                 controller.currentRole.displayName,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: theme.colorScheme.onPrimary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -111,6 +112,11 @@ class DashboardView extends GetView<DashboardController> {
               ),
               const SizedBox(height: AppConstants.spaceSm),
               Obx(() {
+                final totalPatients = controller.totalPatientsCount.value;
+                final todayAppointments = controller.todayAppointmentsCount.value;
+                final inProgress = controller.inProgressCount.value;
+                final completed = controller.completedCount.value;
+
                 return LayoutBuilder(
                   builder: (context, constraints) {
                     final isWide = constraints.maxWidth > 600;
@@ -126,28 +132,28 @@ class DashboardView extends GetView<DashboardController> {
                       children: [
                         MetricCard(
                           title: 'Total Patients',
-                          value: '${controller.totalPatientsCount.value}',
+                          value: '$totalPatients',
                           icon: Icons.people_alt_outlined,
                           iconColor: AppColors.primary,
                           subtitle: 'Registered in system',
                         ),
                         MetricCard(
                           title: 'Appointments',
-                          value: '${controller.todayAppointmentsCount.value}',
+                          value: '$todayAppointments',
                           icon: Icons.calendar_today_outlined,
                           iconColor: AppColors.secondary,
                           subtitle: 'Scheduled for today',
                         ),
                         MetricCard(
                           title: 'In Progress',
-                          value: '${controller.inProgressCount.value}',
+                          value: '$inProgress',
                           icon: Icons.pending_actions,
                           iconColor: AppColors.primary,
                           subtitle: 'Currently in room',
                         ),
                         MetricCard(
                           title: 'Completed',
-                          value: '${controller.completedCount.value}',
+                          value: '$completed',
                           icon: Icons.check_circle_outline,
                           iconColor: AppColors.accent,
                           subtitle: 'Visits concluded',
@@ -174,7 +180,8 @@ class DashboardView extends GetView<DashboardController> {
                             Expanded(
                               child: QuickActionCard(
                                 title: 'Add New Patient',
-                                description: 'Register demographic and medical details',
+                                description:
+                                    'Register demographic and medical details',
                                 icon: Icons.person_add_alt_1_outlined,
                                 backgroundColor: AppColors.primary,
                                 onTap: controller.navigateToAddPatient,
@@ -184,7 +191,8 @@ class DashboardView extends GetView<DashboardController> {
                             Expanded(
                               child: QuickActionCard(
                                 title: 'Book Appointment',
-                                description: 'Schedule new patient consultation',
+                                description:
+                                    'Schedule new patient consultation',
                                 icon: Icons.event_available_outlined,
                                 backgroundColor: AppColors.accent,
                                 onTap: controller.navigateToAppointments,
@@ -194,7 +202,8 @@ class DashboardView extends GetView<DashboardController> {
                             Expanded(
                               child: QuickActionCard(
                                 title: 'Patient Directory',
-                                description: 'Search and filter clinical records',
+                                description:
+                                    'Search and filter clinical records',
                                 icon: Icons.folder_shared_outlined,
                                 backgroundColor: AppColors.secondary,
                                 onTap: controller.navigateToPatientDirectory,
@@ -206,7 +215,8 @@ class DashboardView extends GetView<DashboardController> {
                           children: [
                             QuickActionCard(
                               title: 'Add New Patient',
-                              description: 'Register demographic and medical details',
+                              description:
+                                  'Register demographic and medical details',
                               icon: Icons.person_add_alt_1_outlined,
                               backgroundColor: AppColors.primary,
                               onTap: controller.navigateToAddPatient,
@@ -255,7 +265,8 @@ class DashboardView extends GetView<DashboardController> {
                   case ViewState.loading:
                     return const SizedBox(
                       height: 200,
-                      child: LoadingView(message: 'Fetching today\'s schedule...'),
+                      child:
+                          LoadingView(message: 'Fetching today\'s schedule...'),
                     );
                   case ViewState.error:
                     return ErrorStateView(
@@ -282,8 +293,8 @@ class DashboardView extends GetView<DashboardController> {
                         final apt = controller.todayAppointments[index];
                         return AppointmentTile(
                           appointment: apt,
-                          onStatusChanged: (newStatus) =>
-                              controller.updateAppointmentStatus(apt.id, newStatus),
+                          onStatusChanged: (newStatus) => controller
+                              .updateAppointmentStatus(apt.id, newStatus),
                         );
                       },
                     );
