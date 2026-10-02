@@ -71,7 +71,7 @@ class InsuranceInfoForm extends StatelessWidget {
       List<String> items,
       ) {
     return Obx(() => DropdownButtonFormField<String>(
-      value: controller.value.isEmpty ? null : controller.value,
+      initialValue: controller.value.isEmpty ? null : controller.value,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,

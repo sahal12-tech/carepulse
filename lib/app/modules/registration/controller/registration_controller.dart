@@ -77,8 +77,8 @@ class RegistrationController extends GetxController {
     email.value = '';
     insuranceProvider.value = '';
     insuranceNumber.value = '';
-    allergies.value = [];
-    currentMedications.value = [];
+    allergies.clear();
+    currentMedications.clear();
     emergencyContactName.value = '';
     emergencyContactPhone.value = '';
     primaryCarePhysician.value = '';
@@ -132,8 +132,8 @@ class RegistrationController extends GetxController {
         email: email.value,
         insuranceProvider: insuranceProvider.value,
         insuranceNumber: insuranceNumber.value,
-        allergies: allergies.value,
-        currentMedications: currentMedications.value,
+        allergies: allergies.toList(),
+        currentMedications: currentMedications.toList(),
         emergencyContactName: emergencyContactName.value,
         emergencyContactPhone: emergencyContactPhone.value,
         primaryCarePhysician: primaryCarePhysician.value,

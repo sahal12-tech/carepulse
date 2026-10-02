@@ -1,137 +1,189 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/empty_state_view.dart';
 import '../../../core/widgets/error_state_view.dart';
 import '../../../core/widgets/loading_view.dart';
 import '../controller/appointments_controller.dart';
-import '../widgets/appointment_schedule_grid.dart';
-import '../widgets/doctor_availability_panel.dart';
+import '../widgets/booking_dialog.dart';
+import '../../dashboard/widgets/appointment_tile.dart';
 
-class AppointmentsView extends StatefulWidget {
+class AppointmentsView extends GetView<AppointmentsController> {
   const AppointmentsView({super.key});
 
   @override
-  State<AppointmentsView> createState() => _AppointmentsViewState();
-}
-
-class _AppointmentsViewState extends State<AppointmentsView>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
-    // Update controller when tab changes
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        final tabs = ['Day', 'Week', 'Month'];
-        Get.find<AppointmentsController>().changeTab(tabs[_tabController.index]);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Appointments'),
+        title: const Text('Appointments Schedule'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.today),
-            tooltip: 'Today',
-            onPressed: () => Get.find<AppointmentsController>()
-                .changeDate(DateTime.now()),
-          ),
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            tooltip: 'Select Date',
-            onPressed: () => _showDatePicker(context),
+            icon: const Icon(Icons.add_task_outlined),
+            tooltip: 'Book Appointment',
+            onPressed: () => _openBookingDialog(context),
           ),
         ],
       ),
-      body: Obx(() {
-        final controller = Get.find<AppointmentsController>();
-        switch (controller.viewState.value) {
-          case ViewState.loading:
-            return const LoadingView(message: 'Loading appointments...');
-          case ViewState.error:
-            return ErrorStateView(
-              message: controller.errorMessage.value,
-              onRetry: controller.loadAppointments,
-            );
-          case ViewState.empty:
-            return EmptyStateView(
-              icon: Icons.event_busy,
-              title: 'No Appointments',
-              message: 'No appointments found.',
-              actionLabel: 'Schedule Appointment',
-              onActionPressed: controller.navigateToAddAppointment,
-            );
-          case ViewState.initial:
-          case ViewState.success:
-            return Column(
-              children: [
-                TabBar(
-                  controller: _tabController,
-                  tabs: const [
-                    Tab(text: 'Day'),
-                    Tab(text: 'Week'),
-                    Tab(text: 'Month'),
-                  ],
-                ),
-                const SizedBox(height: AppConstants.spaceSm),
-                Expanded(
-                  child: Row(
-                    children: [
-                      // Main schedule area
-                      Expanded(
-                        flex: 3,
-                        child: AppointmentScheduleGrid(
-                          appointments: controller.getFilteredAppointments(),
-                          selectedDate: controller.selectedDate.value,
-                          viewType: controller.selectedTab.value,
+      body: RefreshIndicator(
+        onRefresh: controller.loadAppointments,
+        child: Padding(
+          padding: const EdgeInsets.all(AppConstants.spaceMd),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Date Selector Banner
+              Obx(() {
+                final date = controller.selectedDate.value;
+                final isToday = DateTime.now().year == date.year &&
+                    DateTime.now().month == date.month &&
+                    DateTime.now().day == date.day;
+
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.spaceMd,
+                      vertical: AppConstants.spaceSm,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          tooltip: 'Previous Day',
+                          onPressed: () {
+                            controller.setDate(
+                              date.subtract(const Duration(days: 1)),
+                            );
+                          },
                         ),
-                      ),
-                      // Doctor availability side panel
-                      Container(
-                        width: 280,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            left: BorderSide(
-                              color: Theme.of(context).dividerColor,
-                            ),
+                        InkWell(
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: date,
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2030),
+                            );
+                            if (picked != null) controller.setDate(picked);
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.calendar_month,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: AppConstants.spaceSm),
+                              Text(
+                                '${date.month}/${date.day}/${date.year} ${isToday ? '(Today)' : ''}',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: const DoctorAvailabilityPanel(),
-                      ),
-                    ],
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          tooltip: 'Next Day',
+                          onPressed: () {
+                            controller.setDate(
+                              date.add(const Duration(days: 1)),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: AppConstants.spaceMd),
+
+              // Status Filter Chips
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Obx(
+                  () => Row(
+                    children: controller.statusFilterOptions.map((filter) {
+                      final isSelected =
+                          controller.selectedStatusFilter.value == filter;
+                      return Padding(
+                        padding:
+                            const EdgeInsets.only(right: AppConstants.spaceSm),
+                        child: FilterChip(
+                          label: Text(filter),
+                          selected: isSelected,
+                          onSelected: (_) =>
+                              controller.setStatusFilter(filter),
+                          selectedColor: theme.colorScheme.primary
+                              .withValues(alpha: 0.2),
+                          checkmarkColor: theme.colorScheme.primary,
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
-              ],
-            );
-        }
-      }),
+              ),
+              const SizedBox(height: AppConstants.spaceMd),
+
+              // List of Appointments
+              Expanded(
+                child: Obx(() {
+                  switch (controller.viewState.value) {
+                    case ViewState.loading:
+                      return const LoadingView(
+                        message: 'Fetching appointments schedule...',
+                      );
+                    case ViewState.error:
+                      return ErrorStateView(
+                        message: controller.errorMessage.value,
+                        onRetry: controller.loadAppointments,
+                      );
+                    case ViewState.empty:
+                      return EmptyStateView(
+                        icon: Icons.event_available_outlined,
+                        title: 'No Appointments Scheduled',
+                        message:
+                            'There are no appointments matching your selected date and filter.',
+                        actionLabel: 'Book Appointment',
+                        onActionPressed: () => _openBookingDialog(context),
+                      );
+                    case ViewState.initial:
+                    case ViewState.success:
+                      return ListView.separated(
+                        itemCount: controller.filteredAppointments.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppConstants.spaceSm),
+                        itemBuilder: (context, index) {
+                          final apt = controller.filteredAppointments[index];
+                          return AppointmentTile(
+                            appointment: apt,
+                            onStatusChanged: (newStatus) =>
+                                controller.updateStatus(apt.id, newStatus),
+                          );
+                        },
+                      );
+                  }
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openBookingDialog(context),
+        icon: const Icon(Icons.add),
+        label: const Text('Book Appointment'),
+      ),
     );
   }
 
-  void _showDatePicker(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  void _openBookingDialog(BuildContext context) {
+    showDialog(
       context: context,
-      initialDate: Get.find<AppointmentsController>().selectedDate.value,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      builder: (_) => const BookingDialog(),
     );
-    if (picked != null &&
-        picked != Get.find<AppointmentsController>().selectedDate.value) {
-      Get.find<AppointmentsController>().changeDate(picked);
-    }
   }
 }

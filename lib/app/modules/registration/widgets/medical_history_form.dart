@@ -32,7 +32,7 @@ class MedicalHistoryForm extends StatelessWidget {
     );
   }
 
-  Widget _buildAllergiesSection(BuildContext context, RxList<String> controller) {
+  Widget _buildAllergiesSection(BuildContext context, RxList<String> list) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -44,19 +44,21 @@ class MedicalHistoryForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppConstants.spaceXs),
-        Wrap(
-          spacing: AppConstants.spaceXs,
-          runSpacing: AppConstants.spaceXs,
-          children: [
-            _buildAllergyChip(context, 'No Known Allergies', controller, true),
-            _buildAllergyChip(context, 'Peanuts', controller, false),
-            _buildAllergyChip(context, 'Latex', controller, false),
-            _buildAllergyChip(context, 'Shellfish', controller, false),
-            _buildAllergyChip(context, 'Pollen', controller, false),
-          ],
+        Obx(
+          () => Wrap(
+            spacing: AppConstants.spaceXs,
+            runSpacing: AppConstants.spaceXs,
+            children: [
+              _buildAllergyChip(context, 'No Known Allergies', list, true),
+              _buildAllergyChip(context, 'Peanuts', list, false),
+              _buildAllergyChip(context, 'Latex', list, false),
+              _buildAllergyChip(context, 'Shellfish', list, false),
+              _buildAllergyChip(context, 'Pollen', list, false),
+            ],
+          ),
         ),
         const SizedBox(height: AppConstants.spaceSm),
-        _buildCustomAllergyField(context, controller),
+        _buildCustomAllergyField(context, list),
       ],
     );
   }
@@ -64,31 +66,25 @@ class MedicalHistoryForm extends StatelessWidget {
   Widget _buildAllergyChip(
       BuildContext context,
       String label,
-      RxList<String> controller,
+      RxList<String> list,
       bool isDefault) {
-    final isSelected = controller.value.contains(label) ||
-        (isDefault && controller.value.isEmpty);
+    final isSelected = list.contains(label) || (isDefault && list.isEmpty);
 
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
       onSelected: (selected) {
         if (label == 'No Known Allergies' && selected) {
-          controller.value = ['No Known Allergies'];
+          list.assignAll(['No Known Allergies']);
         } else if (label == 'No Known Allergies' && !selected) {
-          controller.value.remove('No Known Allergies');
+          list.remove('No Known Allergies');
         } else {
-          final List<String> newList = List.from(controller.value);
           if (selected) {
-            newList.add(label);
+            list.remove('No Known Allergies');
+            if (!list.contains(label)) list.add(label);
           } else {
-            newList.remove(label);
+            list.remove(label);
           }
-          // If they select a specific allergy, remove "No Known Allergies"
-          if (label != 'No Known Allergies' && selected) {
-            newList.remove('No Known Allergies');
-          }
-          controller.value = newList;
         }
       },
       backgroundColor: Theme.of(context).dividerColor,
@@ -104,7 +100,7 @@ class MedicalHistoryForm extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomAllergyField(BuildContext context, RxList<String> controller) {
+  Widget _buildCustomAllergyField(BuildContext context, RxList<String> list) {
     return Padding(
       padding: const EdgeInsets.only(top: AppConstants.spaceSm),
       child: TextFormField(
@@ -119,18 +115,18 @@ class MedicalHistoryForm extends StatelessWidget {
           ),
         ),
         onFieldSubmitted: (value) {
-          if (value.isNotEmpty) {
-            final List<String> newList = List.from(controller.value);
-            newList.remove('No Known Allergies'); // Remove default if adding specific
-            newList.add(value);
-            controller.value = newList;
+          if (value.trim().isNotEmpty) {
+            list.remove('No Known Allergies');
+            if (!list.contains(value.trim())) {
+              list.add(value.trim());
+            }
           }
         },
       ),
     );
   }
 
-  Widget _buildMedicationsSection(BuildContext context, RxList<String> controller) {
+  Widget _buildMedicationsSection(BuildContext context, RxList<String> list) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -142,19 +138,21 @@ class MedicalHistoryForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppConstants.spaceXs),
-        Wrap(
-          spacing: AppConstants.spaceXs,
-          runSpacing: AppConstants.spaceXs,
-          children: [
-            _buildMedicationChip(context, 'None', controller, true),
-            _buildMedicationChip(context, 'Lisinopril', controller, false),
-            _buildMedicationChip(context, 'Metformin', controller, false),
-            _buildMedicationChip(context, 'Atorvastatin', controller, false),
-            _buildMedicationChip(context, 'Albuterol', controller, false),
-          ],
+        Obx(
+          () => Wrap(
+            spacing: AppConstants.spaceXs,
+            runSpacing: AppConstants.spaceXs,
+            children: [
+              _buildMedicationChip(context, 'None', list, true),
+              _buildMedicationChip(context, 'Lisinopril', list, false),
+              _buildMedicationChip(context, 'Metformin', list, false),
+              _buildMedicationChip(context, 'Atorvastatin', list, false),
+              _buildMedicationChip(context, 'Albuterol', list, false),
+            ],
+          ),
         ),
         const SizedBox(height: AppConstants.spaceSm),
-        _buildCustomMedicationField(context, controller),
+        _buildCustomMedicationField(context, list),
       ],
     );
   }
@@ -162,31 +160,25 @@ class MedicalHistoryForm extends StatelessWidget {
   Widget _buildMedicationChip(
       BuildContext context,
       String label,
-      RxList<String> controller,
+      RxList<String> list,
       bool isDefault) {
-    final isSelected = controller.value.contains(label) ||
-        (isDefault && controller.value.isEmpty);
+    final isSelected = list.contains(label) || (isDefault && list.isEmpty);
 
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
       onSelected: (selected) {
         if (label == 'None' && selected) {
-          controller.value = ['None'];
+          list.assignAll(['None']);
         } else if (label == 'None' && !selected) {
-          controller.value.remove('None');
+          list.remove('None');
         } else {
-          final List<String> newList = List.from(controller.value);
           if (selected) {
-            newList.add(label);
+            list.remove('None');
+            if (!list.contains(label)) list.add(label);
           } else {
-            newList.remove(label);
+            list.remove(label);
           }
-          // If they select a specific medication, remove "None"
-          if (label != 'None' && selected) {
-            newList.remove('None');
-          }
-          controller.value = newList;
         }
       },
       backgroundColor: Theme.of(context).dividerColor,
@@ -202,7 +194,7 @@ class MedicalHistoryForm extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomMedicationField(BuildContext context, RxList<String> controller) {
+  Widget _buildCustomMedicationField(BuildContext context, RxList<String> list) {
     return Padding(
       padding: const EdgeInsets.only(top: AppConstants.spaceSm),
       child: TextFormField(
@@ -217,11 +209,11 @@ class MedicalHistoryForm extends StatelessWidget {
           ),
         ),
         onFieldSubmitted: (value) {
-          if (value.isNotEmpty) {
-            final List<String> newList = List.from(controller.value);
-            newList.remove('None'); // Remove default if adding specific
-            newList.add(value);
-            controller.value = newList;
+          if (value.trim().isNotEmpty) {
+            list.remove('None');
+            if (!list.contains(value.trim())) {
+              list.add(value.trim());
+            }
           }
         },
       ),

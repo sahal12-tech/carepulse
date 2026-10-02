@@ -95,7 +95,7 @@ class PersonalInfoForm extends StatelessWidget {
 
   Widget _buildGenderDropdown(BuildContext context, RxString controller) {
     return Obx(() => DropdownButtonFormField<String>(
-      value: controller.value.isEmpty ? null : controller.value,
+      initialValue: controller.value.isEmpty ? null : controller.value,
       decoration: InputDecoration(
         labelText: 'Gender',
         prefixIcon: const Icon(Icons.transgender),

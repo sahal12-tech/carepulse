@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../../data/models/appointment.dart';
 
 class AppointmentScheduleGrid extends StatelessWidget {
@@ -17,7 +16,7 @@ class AppointmentScheduleGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       child: Center(
         child: Text(
           '$viewType View\n\nSelected Date: ${selectedDate.month}/${selectedDate.day}/${selectedDate.year}\n\n${appointments.length} appointments',
