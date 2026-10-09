@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CarePulse API Architecture",
+    "output": "carepulse_api_architecture.html",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [0, 0],
+    "cols": 2,
+    "gapX": 80,
+    "gapY": 80,
+    "cellW": 200,
+    "cellH": 80
+  },
+  "components": [
+    {
+      "id": "flutter_app",
+      "type": "frontend",
+      "label": "Flutter App",
+      "sublabel": "ApiClient sends JWT",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "routers",
+      "type": "backend",
+      "label": "Routers",
+      "sublabel": "6 resource routers",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "dependencies",
+      "type": "backend",
+      "label": "Dependencies",
+      "sublabel": "DB session, auth, roles",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "services",
+      "type": "backend",
+      "label": "Services",
+      "sublabel": "Business rules",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "models_schemas",
+      "type": "backend",
+      "label": "Models and Schemas",
+      "sublabel": "SQLAlchemy, Pydantic",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "database",
+      "type": "external",
+      "label": "Database",
+      "sublabel": "SQLite, later PostgreSQL",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "alembic",
+      "type": "external",
+      "label": "Alembic",
+      "sublabel": "Schema migrations",
+      "row": 5,
+      "col": 1
+    }
+  ],
+  "connections": [
+    {
+      "from": "flutter_app",
+      "to": "routers"
+    },
+    {
+      "from": "routers",
+      "to": "dependencies"
+    },
+    {
+      "from": "dependencies",
+      "to": "services"
+    },
+    {
+      "from": "services",
+      "to": "models_schemas"
+    },
+    {
+      "from": "models_schemas",
+      "to": "database"
+    },
+    {
+      "from": "alembic",
+      "to": "database"
+    }
+  ]
+}

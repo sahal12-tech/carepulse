@@ -126,7 +126,7 @@ class DashboardView extends GetView<DashboardController> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisCount: crossAxisCount,
-                      childAspectRatio: isWide ? 1.5 : 1.3,
+                      mainAxisExtent: isWide ? 150 : 160,
                       crossAxisSpacing: AppConstants.spaceMd,
                       mainAxisSpacing: AppConstants.spaceMd,
                       children: [
@@ -163,7 +163,7 @@ class DashboardView extends GetView<DashboardController> {
                   },
                 );
               }),
-              const SizedBox(height: AppConstants.spaceLg),
+              //const SizedBox(height: AppConstants.spaceSm),
 
               // Quick Actions
               Text(

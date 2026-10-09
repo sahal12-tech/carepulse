@@ -46,11 +46,18 @@ class LoginView extends GetView<AuthController> {
                               ),
                             ),
                             const SizedBox(width: AppConstants.spaceSm),
-                            Text(
-                              AppConstants.appName,
-                              style: theme.textTheme.displayMedium?.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w800,
+                            // FIX 1: Flexible lets the title shrink instead of overflowing
+                            Flexible(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  AppConstants.appName,
+                                  maxLines: 1,
+                                  style: theme.textTheme.displayMedium?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -72,7 +79,9 @@ class LoginView extends GetView<AuthController> {
                         ),
                         const SizedBox(height: AppConstants.spaceSm),
                         Obx(
-                          () => DropdownButtonFormField<UserRole>(
+                              () => DropdownButtonFormField<UserRole>(
+                            // FIX 2: isExpanded gives items the full field width
+                            isExpanded: true,
                             initialValue: controller.selectedRole.value,
                             decoration: const InputDecoration(
                               prefixIcon: Icon(Icons.badge_outlined),
@@ -84,7 +93,13 @@ class LoginView extends GetView<AuthController> {
                                   children: [
                                     Icon(role.icon, size: 20),
                                     const SizedBox(width: AppConstants.spaceSm),
-                                    Text(role.displayName),
+                                    // Expanded + ellipsis stops long role names overflowing
+                                    Expanded(
+                                      child: Text(
+                                        role.displayName,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               );
@@ -104,7 +119,8 @@ class LoginView extends GetView<AuthController> {
                         const SizedBox(height: AppConstants.spaceSm),
                         TextFormField(
                           controller: controller.usernameController,
-                          validator: (v) => FormValidators.validateRequired(v, 'Username'),
+                          validator: (v) =>
+                              FormValidators.validateRequired(v, 'Username'),
                           keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
                             hintText: 'Enter your username',
@@ -120,10 +136,11 @@ class LoginView extends GetView<AuthController> {
                         ),
                         const SizedBox(height: AppConstants.spaceSm),
                         Obx(
-                          () => TextFormField(
+                              () => TextFormField(
                             controller: controller.passwordController,
                             obscureText: controller.isPasswordObscured.value,
-                            validator: (v) => FormValidators.validateRequired(v, 'Password'),
+                            validator: (v) =>
+                                FormValidators.validateRequired(v, 'Password'),
                             decoration: InputDecoration(
                               hintText: 'Enter your password',
                               prefixIcon: const Icon(Icons.lock_outline),
@@ -149,14 +166,19 @@ class LoginView extends GetView<AuthController> {
                             return const SizedBox.shrink();
                           }
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: AppConstants.spaceMd),
+                            padding: const EdgeInsets.only(
+                                bottom: AppConstants.spaceMd),
                             child: Container(
-                              padding: const EdgeInsets.all(AppConstants.spaceSm + 2),
+                              padding: const EdgeInsets.all(
+                                  AppConstants.spaceSm + 2),
                               decoration: BoxDecoration(
-                                color: AppColors.destructive.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(AppConstants.radiusSm),
+                                color:
+                                AppColors.destructive.withValues(alpha: 0.1),
+                                borderRadius:
+                                BorderRadius.circular(AppConstants.radiusSm),
                                 border: Border.all(
-                                  color: AppColors.destructive.withValues(alpha: 0.3),
+                                  color: AppColors.destructive
+                                      .withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Row(
@@ -184,8 +206,9 @@ class LoginView extends GetView<AuthController> {
 
                         // Login Submit Button
                         Obx(
-                          () {
-                            final isLoading = controller.viewState.value == ViewState.loading;
+                              () {
+                            final isLoading =
+                                controller.viewState.value == ViewState.loading;
                             return ElevatedButton(
                               onPressed: isLoading ? null : controller.login,
                               style: ElevatedButton.styleFrom(
@@ -193,20 +216,20 @@ class LoginView extends GetView<AuthController> {
                               ),
                               child: isLoading
                                   ? const SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2.5,
-                                        color: AppColors.onAccent,
-                                      ),
-                                    )
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: AppColors.onAccent,
+                                ),
+                              )
                                   : const Text(
-                                      'Sign In to CarePulse',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                'Sign In to CarePulse',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             );
                           },
                         ),

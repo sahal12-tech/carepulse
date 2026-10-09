@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CarePulse Patient Management System Architecture",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "flutter_app", "type": "frontend", "label": "Flutter App", "sublabel": "UI + GetX State Management", "pos": [200, 200], "size": [200, 80] },
+    { "id": "design_system", "type": "external", "label": "Design System", "sublabel": "MASTER.md", "pos": [200, 400], "size": [180, 60] },
+    { "id": "data_layer", "type": "backend", "label": "Data Layer", "sublabel": "Mock Repositories, API Client, Models", "pos": [600, 300], "size": [200, 80] }
+  ],
+  "connections": [
+    { "id": "app-design", "from": "flutter_app", "to": "design_system", "label": "follows", "fromSide": "bottom", "toSide": "top" },
+    { "id": "app-data", "from": "flutter_app", "to": "data_layer", "label": "state via GetX,\ndata via repos", "fromSide": "right", "toSide": "left" }
+  ]
+}
